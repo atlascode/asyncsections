@@ -1,0 +1,23 @@
+﻿@{
+    ViewBag.Title = "Console";
+}
+
+<style>
+.hidden
+{
+	display:none;
+}
+</style>
+
+<h2>Console Log</h2>
+
+<p>This shows a long running server process feeding back progress as current status</p>
+
+<p>Current Step: <span id="message"></span></p>
+
+
+@section ConsoleAsync{
+<span id="message" transform-replace="message" transform-removeClass="hidden" class="hidden">@ViewBag.Message</span>
+}
+
+<div>Some example footer info</div>

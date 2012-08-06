@@ -1,0 +1,35 @@
+﻿@* Required so you have extention methods for client timings *@
+@using StackExchange.Profiling;
+<!DOCTYPE html>
+<html>
+<head>
+	@* optional (enable client timing framework) *@ 
+    @this.InitClientTimings()
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/themes/base/css", "~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+	<script type="text/javascript" src="@Url.Content("~/Scripts/jsTransform-0.0.1.js")"></script>@* Setup: Add jsTransform *@
+</head>
+<body>
+
+	<h1>AtlasCode.AsyncSections.Demos</h1>
+	<ul>
+		<li>@Html.ActionLink("Multiple Tasks", "Index")</li>
+		<li>@Html.ActionLink("Console", "Console")</li>
+		<li>@Html.ActionLink("Progress", "Progress")</li>
+	</ul>
+
+	<p>This should be visible and selectable on the page while the rest loads</p>
+
+    @Scripts.Render("~/bundles/jquery")
+    @RenderSection("scripts", required: false)
+	
+	@this.RenderBodyAsync() @* Setup: Change RenderBody to use RenderBodyAsync()*@
+
+	@*From this point down, nothing is send to the browser until all async tasks have completed*@
+
+	@MiniProfiler.RenderIncludes()
+</body>
+</html>
