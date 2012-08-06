@@ -1,0 +1,37 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<style>
+.hidden
+{
+	display:none;
+}
+</style>
+
+<h2>Multiple Tasks</h2>
+
+<p>This should be visible and selectable on the page while the rest loads</p>
+
+<div id="message1" style="border: 2px solid Red; height:100px; width:600px;"></div>
+
+<div id="message2" style="border: 2px solid Green; height:100px; width:600px;"></div>
+
+<div id="tests" style="border: 2px solid Blue; width:600px;"></div>
+
+<div transform-append="tests">RenderAction NonAsync @{Html.RenderAction("Test");}</div>
+<div transform-append="tests">Action NonAsync @Html.Action("Test")</div>
+
+@section Message1Async{ @*Async sections must have the Async suffix*@
+	<div transform-append="tests">RenderAction Async @{Html.RenderAction("Test");}</div>
+	<div transform-append="tests">Action Async @Html.Action("Test")</div>
+	<p transform-append="message1">Message 1: @ViewBag.Message</p> @*You will see this element blink at the bottom of the body when it arrives. See below for a way to keep it hidden*@
+}
+
+@section Message2Async{ @*Async sections must have the Async suffix*@
+	<p transform-append="message2" 
+		transform-removeClass="hidden" class="hidden"> @*use jsTransform to keep this element hidden until it gets put in its place on the page*@
+		Message 2: @ViewBag.Message2</p>
+}
+
+<div>Some example footer info</div>

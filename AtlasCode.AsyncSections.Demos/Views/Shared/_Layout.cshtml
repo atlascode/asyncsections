@@ -16,20 +16,21 @@
 
 	<h1>AtlasCode.AsyncSections.Demos</h1>
 	<ul>
-		<li>@Html.ActionLink("Multiple Tasks", "Index")</li>
-		<li>@Html.ActionLink("Console", "Console")</li>
-		<li>@Html.ActionLink("Progress", "Progress")</li>
+		<li>@Html.ActionLink("Multiple Tasks", "Index", "MultipleTask")</li>
+		<li>@Html.ActionLink("Console", "Index", "Console")</li>
+		<li>@Html.ActionLink("Progress", "Index", "Progress")</li>
+		<li>@Html.ActionLink("Script Ordering", "Index", "ScriptOrder")</li>
+		<li>@Html.ActionLink("Bare Minimum", "Index", "Minimum")</li>
 	</ul>
 
-	<p>This should be visible and selectable on the page while the rest loads</p>
-
     @Scripts.Render("~/bundles/jquery")
-    @RenderSection("scripts", required: false)
-	
+    
 	@this.RenderBodyAsync() @* Setup: Change RenderBody to use RenderBodyAsync()*@
 
 	@*From this point down, nothing is send to the browser until all async tasks have completed*@
 
 	@MiniProfiler.RenderIncludes()
+
+	@RenderSection("scripts", required: false)
 </body>
 </html>

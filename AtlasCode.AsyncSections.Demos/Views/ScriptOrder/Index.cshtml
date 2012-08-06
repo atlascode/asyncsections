@@ -1,0 +1,33 @@
+﻿@{
+    ViewBag.Title = "Script Ordering";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<p>
+This demo shows how the developer has fine control over when their javascript gets send to the browser
+</p>
+
+<script type="text/javascript">
+	alert("Before Async Load");
+</script>
+
+@section Task1Async{ @*Async sections must have the Async suffix*@
+	<p>@ViewBag.Message</p>
+	<script type="text/javascript">
+		alert("After Task1 Load");
+	</script>
+}
+
+@section Task2Async{ @*Async sections must have the Async suffix*@
+	<p>@ViewBag.Message2</p>
+	<script type="text/javascript">
+		alert("After Task2 Load");
+	</script>
+}
+
+@section scripts{
+	<script type="text/javascript">
+		alert("After all tasks loaded");
+	</script>
+}
