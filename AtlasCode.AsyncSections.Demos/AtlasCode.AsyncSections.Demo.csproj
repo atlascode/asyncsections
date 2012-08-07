@@ -125,6 +125,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\MiniProfiler.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\ComparisonController.cs" />
     <Compile Include="Controllers\ConsoleController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MinimumController.cs" />
@@ -259,6 +260,15 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Shared\_Minimum.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Comparison\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Comparison\NoAsync.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Comparison\Async.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

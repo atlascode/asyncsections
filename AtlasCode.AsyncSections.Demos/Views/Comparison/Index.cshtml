@@ -1,0 +1,25 @@
+﻿@{
+	ViewBag.Title = "Side by Side Comparison";
+}
+
+<style>
+iframe
+{
+	float:left;
+	border:1px solid black;
+}
+h3
+{
+	float:left;
+	width:300px;
+}
+</style>
+
+<h2>Side by Side Comparison</h2>
+
+<p>In the iframes below, you can see the percieved speed difference between a standard AsyncController ans the AsyncSectionController</p>
+
+<h3>AsyncController</h3><h3>AsyncSectionsController</h3>
+<div style="clear:both;"></div>
+<iframe width="300" height="400" src="@Url.Action("NoAsync")"></iframe>
+<iframe width="300" height="400" src="@Url.Action("Async")"></iframe>
