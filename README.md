@@ -22,7 +22,7 @@ Adds perceived speed from MVC4 AsyncConstollers via a new AsyncSectionController
 
 <p>In the @Html.ActionLink("example above", "Index", "Minimum"), you will see that the element in the Task1Async section will be rendered after the example footer</p>
 
-<h3>When would I use an AsyncSection</h3>
+<h3>When would I use an AsyncSection?</h3>
 <p>Whenever you are doing something on the server that takes a few seconds but you dont want to make the user wait before allowing them to use the site. For example...</p>
 <ul>
 	<li>Processing an imported spreadsheet</li>
