@@ -45,7 +45,7 @@ namespace AtlasCode.AsyncSections
 				Page.ViewContext = viewContext;
 				Page.ViewData = viewContext.ViewData;
 				Page.InitHelpers();
-
+				
 				WebPageRenderingBase startPage = null;
 				dynamic razorView = new ExposedObject(CurrentView);
 				if (((dynamic)CurrentView).RunViewStartPages)
