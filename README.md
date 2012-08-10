@@ -5,6 +5,8 @@
 <p>However, from a user's perspective nothing changes. They still have to wait x seconds for the page to respond and are are usually stuck on a white page that looks like the server isnt doing anything :-(</p>
 <p>That's where AsyncSections come in! Imagine if you could seperate your view into sections which contain the results of your long running functions. Now you can! These are seperated from normal document rendering to allow the page to load first, then load in the results when they are ready.</p>
 
+<p>Check out the <a href="http://asyncsectionsdemo.atlascode.com/Comparison" target="_blank">comparison demo</a> to see AsyncSections in action.<p>
+
 <h3>When would I use an AsyncSection</h3>
 <p>Whenever you are doing something on the server that takes a few seconds but you dont want to make the user wait before allowing them to use the site. For example...</p>
 <ul>
