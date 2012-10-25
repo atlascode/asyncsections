@@ -11,13 +11,23 @@ namespace System.Web.Mvc
 {
 	public static class WebViewPageAsyncExtentions
 	{
-		public static HelperResult RenderBodyAsync(this WebViewPage page)
+		public static HelperResult RenderBodyAsync(this WebViewPage page, bool flushAfterBody = true)
 		{
 			var result = page.RenderBody();
 			result.WriteTo(page.ViewContext.Writer);
-			page.Flush();
+
+			if (flushAfterBody)
+			{
+				page.Flush();
+			}
 
 			return null; // We manually write the body content to the current text writer so we can flush it, so we dont want to return it again or we would get 2 bodies
+		}
+
+		public static HelperResult RenderAsyncSections(this WebViewPage page)
+		{
+			page.Flush();
+			return null;
 		}
 
 		internal static void Flush(this WebViewPage page, bool sendPadding = false)
@@ -30,7 +40,10 @@ namespace System.Web.Mvc
 			var sb = ((StringWriter)writer).GetStringBuilder();
 			if (page.Context.Response.IsClientConnected)
 			{
-				page.Context.Response.Write(sb);
+				if (sb.Length > 0)
+				{
+					page.Context.Response.Write(sb);
+				}
 
 				try
 				{

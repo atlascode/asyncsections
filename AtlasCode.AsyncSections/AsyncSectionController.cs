@@ -7,19 +7,22 @@ using System.Reflection;
 using System.IO;
 using System.Web.WebPages;
 using System.Globalization;
+using System.Web.Compilation;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace AtlasCode.AsyncSections
 {
-	public class AsyncSectionController : AsyncController
+	public class AsyncSectionController : Controller
 	{
 		public WebViewPage Page { get; private set; }
 		public Dictionary<string, SectionWriter> AsyncSections { get; private set; }
 		public IView CurrentView { get; set; }
 		private TextWriter finalWriter;
 
-		protected void AsyncView()
+		protected Task<ActionResult> AsyncView()
 		{
-			this.AsyncManager.Sync(() =>
+			AsyncManager.Sync(() =>
 			{
 				var result = View();
 
@@ -28,9 +31,16 @@ namespace AtlasCode.AsyncSections
 
 				CurrentView = result.View as IView;
 
+				// If we are profiling using MiniProfiler, unwrap the view
+				if (CurrentView.GetType().FullName == "StackExchange.Profiling.MVCHelpers.ProfilingViewEngine+WrappedView")
+				{
+					CurrentView = CurrentView.GetType().GetField("wrapped", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(CurrentView) as IView;
+				}
+
 				// Instantiate the view class. There are alot of internal/private reflections here
 				var _buildManager = typeof(BuildManagerCompiledView).GetProperty("BuildManager", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(CurrentView, null);
 				IViewPageActivator _viewPageActivator = typeof(BuildManagerCompiledView).GetField("ViewPageActivator", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(CurrentView) as IViewPageActivator;
+
 				Type compiledType = _buildManager.GetType().GetMethod("System.Web.Mvc.IBuildManager.GetCompiledType", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(_buildManager, new object[] { ((dynamic)CurrentView).ViewPath }) as Type;
 				if (compiledType != null)
 				{
@@ -45,7 +55,7 @@ namespace AtlasCode.AsyncSections
 				Page.ViewContext = viewContext;
 				Page.ViewData = viewContext.ViewData;
 				Page.InitHelpers();
-				
+
 				WebPageRenderingBase startPage = null;
 				dynamic razorView = new ExposedObject(CurrentView);
 				if (((dynamic)CurrentView).RunViewStartPages)
@@ -92,11 +102,32 @@ namespace AtlasCode.AsyncSections
 				// Keep a reference to the last part of the page after the RenderBodyAsync call, so we can send it after all async sections have been rendered
 				finalWriter = Page.ViewContext.Writer;
 			});
+
+			// Wait for all the async operations to complete before returning the empty async task so that we ensure the httpcontext will always be ready for async sections to render to
+			EventWaitHandle allOperationsComplete = new EventWaitHandle(false, EventResetMode.ManualReset);
+			AsyncManager.OutstandingOperations.Completed += (s, ea) => { allOperationsComplete.Set(); };
+
+			return Task.Factory.StartNew(() =>
+			{
+				allOperationsComplete.WaitOne();
+
+				// Send the last part of the page after the RenderBodyAsync call if there is one
+				if (finalWriter != null)
+				{
+					AsyncManager.Sync(() =>
+					{
+						Page.Flush(finalWriter);
+					});
+				}
+
+				// Return an empty result because at this point, the entire page has been rendered
+				return (ActionResult)null;
+			});
 		}
 
 		protected void AsyncSection(string sectionName)
 		{
-			this.AsyncManager.Sync(() =>
+			AsyncManager.Sync(() =>
 			{
 				// Add a textwriter to the stack for the async sections to render to
 				TextWriter output = new StringWriter(CultureInfo.CurrentCulture);
@@ -119,15 +150,13 @@ namespace AtlasCode.AsyncSections
 			});
 		}
 
-		protected override void OnActionExecuted(ActionExecutedContext filterContext)
+		protected Task AsyncTask(Action action)
 		{
-			base.OnActionExecuted(filterContext);
-
-			// Send the last part of the page after the RenderBodyAsync call if there is one
-			if (finalWriter != null)
+			AsyncManager.OutstandingOperations.Increment();
+			return Task.Factory.StartNew(action).ContinueWith(t =>
 			{
-				Page.Flush(finalWriter);
-			}
+				AsyncManager.OutstandingOperations.Decrement();
+			});
 		}
 	}
 }
